@@ -41,6 +41,11 @@ public class AprioriCoverageCalc {
 		this.dataCount = this.attributeDatas[0].getDataCount();
 	}
 	
+	/**
+	 * 取得符合特定屬性名稱的資料
+	 * @param attributeName 屬性名稱
+	 * @return 資料
+	 */
 	public AttributeData getAttributeDataByName(String attributeName) {
 		
 		// 若未正確初始，擋下
@@ -51,6 +56,19 @@ public class AprioriCoverageCalc {
 			if (ad.getAttributeName().equals(attributeName)) return ad;
 		
 		return null;
+	}
+	
+	/**
+	 * 取得涵蓋率
+	 * @param filters 過濾格式 "attA:True&attC:False"...
+	 * @return 涵蓋率
+	 */
+	public double getCoverage(String filters) {
+		
+		// 若未正確初始，擋下
+		if (attributeDatas == null || attributeDatas.length == 0) return 0.0;
+		
+		return getCoverage(filters.trim().split("&"));
 	}
 	
 	/**
@@ -126,8 +144,6 @@ public class AprioriCoverageCalc {
 				if (useAttributeDatas[filterIdx].getData(id) != filters[filterIdx].getType()) 
 					remainderIds.remove(id);
 
-		return remainderIds.size() / dataCount;
+		return remainderIds.size() * 1.0 / dataCount;
 	}
-	
-	
 }

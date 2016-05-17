@@ -68,7 +68,7 @@ public class AttributeData {
 		
 		int counter = 0;
 		for (boolean b : list) if (b == type) counter++;
-		return counter / list.size();
+		return counter * 1.0 / list.size();
 	}
 	
 }

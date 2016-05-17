@@ -41,7 +41,7 @@ public class FileParser {
 		if (data.trim().length() == 0 ) return false;
 		
 		// 處理屬性名稱
-		String[] raw = data.trim().split("\t");
+		String [] raw = data.trim().split(" ");
 		
 		// 創建儲存物件
 		attributeDatas = new AttributeData [raw.length];
@@ -59,7 +59,7 @@ public class FileParser {
 		if (data.trim().length() == 0 ) return;
 
 		// 分割資料
-		String[] raw = data.trim().split("\t");
+		String[] raw = data.trim().split(" ");
 		
 		// 存入資料
 		for (int i = 0; i < raw.length; i++) 
