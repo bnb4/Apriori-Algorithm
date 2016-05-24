@@ -132,6 +132,7 @@ public class Gui extends JFrame implements ActionListener{
 		    	if (isValidFile) {
 		    		setAttribute(FileParser.getAttributes());
 		    		setData(FileParser.getAllData());
+		    		btnStart.setEnabled(true);
 		    	}
 		    }
 		    
@@ -156,7 +157,7 @@ public class Gui extends JFrame implements ActionListener{
 		for (Map<String, String> map : data) {
 			String[] row = new String[map.keySet().size()];
 			int index = 0;
-			for (String key : map.keySet()) {
+			for (String key : dataColumns) {
 				row[index] = map.get(key);
 				System.out.print(row[index]);
 				index++;
@@ -199,7 +200,7 @@ public class Gui extends JFrame implements ActionListener{
 	 * 設定屬性
 	 */
 	public void setAttribute(List<String> attributes) {
-		attributes.toArray(dataColumns);
+		dataColumns = attributes.toArray(dataColumns);
 		buildDataTable();
 	}
 	
