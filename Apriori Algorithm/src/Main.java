@@ -5,6 +5,8 @@ public class Main {
 
 	public static void main(String[] args) {
 		
+		Gui gui = new Gui();
+		
 		// 這是使用的DEMO
 		FileParser fileParser = new FileParser("demo1.txt");
 		AttributeData [] attributeDatas = fileParser.getAllData();
