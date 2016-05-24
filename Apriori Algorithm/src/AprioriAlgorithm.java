@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class AprioriAlgorithm {
 	
-	private static AprioriAlgorithm aprioriAlgorithm;
+	private static AprioriAlgorithm aprioriAlgorithm = new AprioriAlgorithm();
 	private double minSupport;
 	private Gui gui;
 	

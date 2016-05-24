@@ -79,12 +79,15 @@ public class Gui extends JFrame implements ActionListener{
 		Border border = BorderFactory.createDashedBorder(Color.BLACK, 5, 2);
 		attributeArea.setBorder(BorderFactory.createCompoundBorder(border, 
 		            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+		attributeArea.setLineWrap(true);
+		attributeArea.setWrapStyleWord(true);
+		
 		
 		JScrollPane scrollPane = new JScrollPane(dataTable);
 	    scrollPane.setBounds(30, 300, 450, 200);
 	    
 	    
-	    //buildDataTable();
+	    buildDataTable();
 	    
 	    labelCoverage.setBounds(60, 510, 100, 50);
 	    textCoverage.setBounds(140, 520, 100, 30);
@@ -136,6 +139,7 @@ public class Gui extends JFrame implements ActionListener{
 		    		setData(FileParser.getAllData());
 		    		AprioriAlgorithm.get().setAttributes(FileParser.getAttributeInfo());
 					AprioriAlgorithm.get().setDatas(FileParser.getAllData());
+					showAttribute(FileParser.getAttributeInfo());
 		    		btnStart.setEnabled(true);
 		    	}
 		    }
@@ -217,6 +221,22 @@ public class Gui extends JFrame implements ActionListener{
 	public void setAttribute(List<String> attributes) {
 		dataColumns = attributes.toArray(dataColumns);
 		buildDataTable();
+	}
+	
+	/*
+	 * 屬性
+	 */
+	public void showAttribute(Map<String, String[]> attribuesMap) {
+		String text = "";
+		for (String key : attribuesMap.keySet()) {
+			text += key + " : \t";
+			for (String value : attribuesMap.get(key)) {
+				text += value + ", ";
+			}
+			text.substring(0, text.length()-1);
+			text += "\n";
+		}
+		attributeArea.setText(text);
 	}
 	
 	/*
