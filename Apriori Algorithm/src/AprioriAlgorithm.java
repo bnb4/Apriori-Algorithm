@@ -33,7 +33,8 @@ public class AprioriAlgorithm {
 	
 	public void start(Gui gui) {
 		this.gui = gui;
-		newCandidate(1, null);
+		Map<Map<String, String>, Double> result = newCandidate(1, null);
+		mineRules(result);
 	}
 	
 	private Map<Map<String, String>, Double> newCandidate(int round, 
@@ -110,5 +111,9 @@ public class AprioriAlgorithm {
 			}
 		}
 		return matchData * 1.0 / data.size();
+	}
+	
+	private AssociationRule[] mineRules(Map<Map<String, String>, Double> result) {
+		return null;
 	}
 }
