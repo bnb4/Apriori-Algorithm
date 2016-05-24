@@ -8,7 +8,7 @@ public class AprioriAlgorithm {
 	
 	private static AprioriAlgorithm aprioriAlgorithm;
 	private double minSupport;
-	private GUI gui;
+	private Gui gui;
 	
 	private Map<String, String[]> attributes;
 	private List<Map<String, String>> data;
@@ -31,7 +31,7 @@ public class AprioriAlgorithm {
 		this.minSupport = minSupport;
 	}
 	
-	public void start(GUI gui) {
+	public void start(Gui gui) {
 		this.gui = gui;
 		newCandidate(1, null);
 	}
@@ -97,7 +97,6 @@ public class AprioriAlgorithm {
 	}
 	
 	private double calculateSupport(Map<String, String> target) {
-		double support = 0;
 		int matchData = 0;
 		for (Map<String, String> d : data) {
 			int matchAtt = 0;
