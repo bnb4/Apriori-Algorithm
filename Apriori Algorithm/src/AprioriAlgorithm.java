@@ -16,7 +16,7 @@ public class AprioriAlgorithm {
 	private AprioriAlgorithm() {}
 	
 	public static AprioriAlgorithm get() {
-		return aprioriAlgorithm == null ? aprioriAlgorithm : new AprioriAlgorithm();
+		return aprioriAlgorithm == null ? new AprioriAlgorithm() : aprioriAlgorithm;
 	}
 	
 	public void setAttributes(Map<String, String[]> attributes) {

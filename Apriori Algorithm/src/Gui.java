@@ -134,6 +134,8 @@ public class Gui extends JFrame implements ActionListener{
 		    	if (isValidFile) {
 		    		setAttribute(FileParser.getAttributes());
 		    		setData(FileParser.getAllData());
+		    		AprioriAlgorithm.get().setAttributes(FileParser.getAttributeInfo());
+					AprioriAlgorithm.get().setDatas(FileParser.getAllData());
 		    		btnStart.setEnabled(true);
 		    	}
 		    }
@@ -141,10 +143,14 @@ public class Gui extends JFrame implements ActionListener{
 		}
 		
 		if (e.getSource() == btnStart) {
-			if (coverage > 0 && coverage < 100) {
-				AprioriAlgorithm.get().setAttributes(FileParser.getAttributeInfo());
-				AprioriAlgorithm.get().setDatas(FileParser.getAllData());
+			if (textCoverage.getText().isEmpty()){
+				return;
+			}
+			
+			coverage = Double.parseDouble(textCoverage.getText()) / 100;
+			if (coverage > 0 && coverage < 1) {
 				AprioriAlgorithm.get().setMinSupport(coverage);
+				AprioriAlgorithm.get().start(this);
 			}
 		}
 	}
