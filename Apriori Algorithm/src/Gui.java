@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
@@ -42,7 +43,8 @@ public class Gui extends JFrame implements ActionListener{
 	private List<Map<String, String>> data = new ArrayList<>();
 	private String[] resultColumns = {"項目", "涵蓋率"};
 	private String[] ruleColumns = {"法則", "涵蓋率", "正確率"};
-	private String[][] resultData = {};
+	private Map<Map<String, String>, Double> resultData = new HashMap<Map<String,String>, Double>();
+	private AssociationRule[] ruleData = {};
 	private double coverage = 0;
 
 	public Gui() {
@@ -132,9 +134,24 @@ public class Gui extends JFrame implements ActionListener{
 		    	if (isValidFile) {
 		    		setAttribute(FileParser.getAttributes());
 		    		setData(FileParser.getAllData());
+		    		AprioriAlgorithm.get().setAttributes(FileParser.getAttributeInfo());
+					AprioriAlgorithm.get().setDatas(FileParser.getAllData());
+		    		btnStart.setEnabled(true);
 		    	}
 		    }
 		    
+		}
+		
+		if (e.getSource() == btnStart) {
+			if (textCoverage.getText().isEmpty()){
+				return;
+			}
+			
+			coverage = Double.parseDouble(textCoverage.getText()) / 100;
+			if (coverage > 0 && coverage < 1) {
+				AprioriAlgorithm.get().setMinSupport(coverage);
+				AprioriAlgorithm.get().start(this);
+			}
 		}
 	}
 
@@ -156,9 +173,8 @@ public class Gui extends JFrame implements ActionListener{
 		for (Map<String, String> map : data) {
 			String[] row = new String[map.keySet().size()];
 			int index = 0;
-			for (String key : map.keySet()) {
+			for (String key : dataColumns) {
 				row[index] = map.get(key);
-				System.out.print(row[index]);
 				index++;
 			}
 			dataTableModel.addRow(row);
@@ -199,7 +215,7 @@ public class Gui extends JFrame implements ActionListener{
 	 * 設定屬性
 	 */
 	public void setAttribute(List<String> attributes) {
-		attributes.toArray(dataColumns);
+		dataColumns = attributes.toArray(dataColumns);
 		buildDataTable();
 	}
 	
@@ -215,8 +231,18 @@ public class Gui extends JFrame implements ActionListener{
 	 * 設定涵蓋率
 	 */
 	public void setAccuracy(double coverage) {
-		this.coverage = coverage;
-		//Todo: 轉給演算法，要弄成0.多
+		this.coverage = coverage / 100;
 	}
+	
+	public void setResultData(Map<Map<String, String>, Double> data) {
+		resultData = data;
+		buildDataTable();
+	}
+			
+	public void setResultData(AssociationRule[] data) {
+		ruleData = data;
+		buildDataTable();
+	}
+	
 	
 }
