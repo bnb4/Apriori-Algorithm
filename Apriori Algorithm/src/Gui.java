@@ -137,6 +137,12 @@ public class Gui extends JFrame implements ActionListener{
 		    }
 		    
 		}
+		
+		if (e.getSource() == btnStart) {
+			if (coverage > 0 && coverage < 100) {
+				
+			}
+		}
 	}
 
 	
@@ -159,7 +165,6 @@ public class Gui extends JFrame implements ActionListener{
 			int index = 0;
 			for (String key : dataColumns) {
 				row[index] = map.get(key);
-				System.out.print(row[index]);
 				index++;
 			}
 			dataTableModel.addRow(row);
