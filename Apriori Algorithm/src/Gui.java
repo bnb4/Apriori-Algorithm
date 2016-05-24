@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
@@ -42,7 +43,8 @@ public class Gui extends JFrame implements ActionListener{
 	private List<Map<String, String>> data = new ArrayList<>();
 	private String[] resultColumns = {"項目", "涵蓋率"};
 	private String[] ruleColumns = {"法則", "涵蓋率", "正確率"};
-	private String[][] resultData = {};
+	private Map<Map<String, String>, Double> resultData = new HashMap<Map<String,String>, Double>();
+	private AssociationRule[] ruleData = {};
 	private double coverage = 0;
 
 	public Gui() {
@@ -140,7 +142,9 @@ public class Gui extends JFrame implements ActionListener{
 		
 		if (e.getSource() == btnStart) {
 			if (coverage > 0 && coverage < 100) {
-				
+				AprioriAlgorithm.get().setAttributes(FileParser.getAttributeInfo());
+				AprioriAlgorithm.get().setDatas(FileParser.getAllData());
+				AprioriAlgorithm.get().setMinSupport(coverage);
 			}
 		}
 	}
@@ -221,8 +225,18 @@ public class Gui extends JFrame implements ActionListener{
 	 * 設定涵蓋率
 	 */
 	public void setAccuracy(double coverage) {
-		this.coverage = coverage;
-		//Todo: 轉給演算法，要弄成0.多
+		this.coverage = coverage / 100;
 	}
+	
+	public void setResultData(Map<Map<String, String>, Double> data) {
+		resultData = data;
+		buildDataTable();
+	}
+			
+	public void setResultData(AssociationRule[] data) {
+		ruleData = data;
+		buildDataTable();
+	}
+	
 	
 }
