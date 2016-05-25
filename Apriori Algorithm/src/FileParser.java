@@ -10,17 +10,19 @@ import java.util.Scanner;
 /**
  *	用來格式化輸入的檔案
  */
-public class FileParser {
+public final class FileParser {
 	
 	// 儲存資料
 	private static Map<String, String[]> attibutesMap = new HashMap<String, String[]>();
 	private static List<Map<String, String>> data = new ArrayList<Map<String, String>>();
 	private static List<String> attribute = new ArrayList<String>();
 
+	//檔案路徑
 	public static String PATH = "";
 	
 	private static boolean readFile() {
 		
+		//先將所有資料清空，重新讀取
 		attibutesMap = new HashMap<String, String[]>();
 		data = new ArrayList<Map<String, String>>();
 		attribute = new ArrayList<String>();
@@ -30,8 +32,8 @@ public class FileParser {
 		}
 		
 		boolean isReadAttribute = false;
+		
 		try (Scanner scanner = new Scanner(new File(PATH))) {
-			// 讀取第一行(屬性名稱)
 			
 			while (scanner.hasNext()) {
 				String line = scanner.nextLine().trim();
@@ -44,11 +46,11 @@ public class FileParser {
 					isReadAttribute = false;
 					continue;
 				}
+				
 				if (isReadAttribute) {
 					if (!loadAttribute(line)) {
 						throw new Exception("Attribute is not valid");
 					}
-					
 				}
 				
 				if (!isReadAttribute) {
@@ -65,7 +67,6 @@ public class FileParser {
 			return false;
 		} catch (Exception e) {
 			e.printStackTrace(); 
-			System.out.println(e.getMessage());
 			return false;
 		}
 	}
@@ -82,7 +83,7 @@ public class FileParser {
 		}
 		try {
 		
-			// 處理屬性名稱與定義
+			//處理屬性名稱與定義
 			String[] att = line.split(":");
 			String[] values = att[1].trim().split("\\s*,\\s*");
 			
@@ -90,7 +91,9 @@ public class FileParser {
 			attribute.add(att[0].trim());
 			
 			return true;
+			
 		} catch (Exception e) {
+			//過程中有錯誤，則加入失敗
 			return false;
 		}
 	}
@@ -125,8 +128,8 @@ public class FileParser {
 			data.add(map);
 			return true;
 		}
+		
 		return false;
-
 	}
 	
 	/**
@@ -138,8 +141,8 @@ public class FileParser {
 	}
 	
 	/**
-	 * 取得屬性定義
-	 * @return 格式過的屬性資料
+	 * 取得屬性List
+	 * @return 屬性List
 	 */
 	public static List<String> getAttributes() {
 		return attribute;
