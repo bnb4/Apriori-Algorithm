@@ -28,13 +28,13 @@ public class Gui extends JFrame implements ActionListener{
 	private JTextField textCoverage = new JTextField();
 	private JButton btnStart = new JButton("開始");
 	
-	private DefaultTableModel dataTableModel = new readOnlyTableModel(); 
+	private DefaultTableModel dataTableModel = new ReadOnlyTableModel(); 
 	private JTable dataTable = new JTable(dataTableModel);
 	
-	private DefaultTableModel resultTableModel = new readOnlyTableModel(); 
+	private DefaultTableModel resultTableModel = new ReadOnlyTableModel(); 
 	private JTable resultTable = new JTable(resultTableModel);
 	
-	private DefaultTableModel ruleTableModel = new readOnlyTableModel(); 
+	private DefaultTableModel ruleTableModel = new ReadOnlyTableModel(); 
 	private JTable ruleTable = new JTable(ruleTableModel);
 	
 	/* 資料 */
@@ -195,10 +195,10 @@ public class Gui extends JFrame implements ActionListener{
 		resultData = new HashMap<Map<String,String>, Double>();		
 		ruleData = null;
 		
-		resultTableModel = new readOnlyTableModel();
+		resultTableModel = new ReadOnlyTableModel();
 		resultTable.setModel(resultTableModel);
 		
-		ruleTableModel = new readOnlyTableModel();
+		ruleTableModel = new ReadOnlyTableModel();
 		ruleTable.setModel(ruleTableModel);
 		
 		//重建table
@@ -217,7 +217,7 @@ public class Gui extends JFrame implements ActionListener{
 		}
 		
 		//清空現有資料
-		dataTableModel = new readOnlyTableModel();
+		dataTableModel = new ReadOnlyTableModel();
 		dataTable.setModel(dataTableModel);
 		
 		//塞欄位
@@ -306,7 +306,7 @@ public class Gui extends JFrame implements ActionListener{
 	 * 繼承 DefaultTableModel class
 	 * 將可修改方法改為false
 	 */
-	class readOnlyTableModel extends DefaultTableModel {
+	class ReadOnlyTableModel extends DefaultTableModel {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
