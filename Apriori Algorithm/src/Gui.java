@@ -44,7 +44,7 @@ public class Gui extends JFrame implements ActionListener{
 	private String[] resultColumns = {"項目", "涵蓋率"};
 	private String[] ruleColumns = {"法則", "涵蓋率", "正確率"};
 	private Map<Map<String, String>, Double> resultData = new HashMap<Map<String,String>, Double>();
-	private AssociationRule[] ruleData = {};
+	private AssociationRule[] ruleData;
 	private double coverage = 0;
 
 	public Gui() {
@@ -55,7 +55,6 @@ public class Gui extends JFrame implements ActionListener{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);          
 		this.getContentPane().setBackground(Color.white);
-		//this.setAlwaysOnTop(true);
 		this.setResizable(false);
 		this.setLayout(null);
 		
@@ -109,6 +108,7 @@ public class Gui extends JFrame implements ActionListener{
 		rulePanel.setBounds(520, 280, 440, 250);
 		
 		buildResultTable();
+		buildRuleTable();
 	    
 	    add(resultPanel);
 	    add(rulePanel);
@@ -127,6 +127,7 @@ public class Gui extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnChooseFile) {
 			JFileChooser chooser = new JFileChooser();
+			chooser.setCurrentDirectory(new java.io.File("."));
 		    FileNameExtensionFilter filter = new FileNameExtensionFilter("txt", "txt");
 		    chooser.setFileFilter(filter);
 		    
@@ -143,6 +144,12 @@ public class Gui extends JFrame implements ActionListener{
 					AprioriAlgorithm.get().setDatas(FileParser.getAllData());
 					showAttribute(FileParser.getAttributeInfo());
 		    		btnStart.setEnabled(true);
+		    	} else {
+		    		JFrame frame = new JFrame();
+					JOptionPane.showMessageDialog(frame,
+					    "輸入檔案格式有誤",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
 		    	}
 		    }
 		    
@@ -150,6 +157,11 @@ public class Gui extends JFrame implements ActionListener{
 		
 		if (e.getSource() == btnStart) {
 			if (textCoverage.getText().isEmpty()){
+				JFrame frame = new JFrame();
+				JOptionPane.showMessageDialog(frame,
+				    "請設定涵蓋率",
+				    "Warning",
+				    JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			
@@ -191,34 +203,58 @@ public class Gui extends JFrame implements ActionListener{
 	
 	private void buildResultTable() {
 		
-		for (String column : resultColumns) {
-			resultTableModel.addColumn(column); 
-		}
 		
-		resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-	    resultTable.getColumnModel().getColumn(0).setPreferredWidth(250);
-	    resultTable.getColumnModel().getColumn(1).setPreferredWidth(195);
-	    
-		
-		for (String column : ruleColumns) {
-			ruleTableModel.addColumn(column); 
-		}
-		
-		ruleTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		ruleTable.getColumnModel().getColumn(0).setPreferredWidth(250);
-		ruleTable.getColumnModel().getColumn(1).setPreferredWidth(95);
-		ruleTable.getColumnModel().getColumn(2).setPreferredWidth(95);
-		/*
-		Map<Map<String, String>, Double>
-		
-		
-		for (Map keyMap : resultData.keySet()) {
-			String[] row = new String[3];
-			for (String column : keyMap.keySet()) {
-				
+		if (resultTableModel.getColumnCount() == 0) {		
+			for (String column : resultColumns) {
+				resultTableModel.addColumn(column); 
 			}
-		}*/
+			
+			resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		    resultTable.getColumnModel().getColumn(0).setPreferredWidth(250);
+		    resultTable.getColumnModel().getColumn(1).setPreferredWidth(195);
+	    }
+	    
+	   
+
+		for (Map<String, String> keyMap : resultData.keySet()) {
+			String[] row = new String[2];
+			String resultText = "";
+			for (String key : keyMap.keySet()) {
+				resultText += key + " = " + keyMap.get(key) + " , ";
+			}
+			resultText = resultText.substring(0, resultText.length()-3);
+			row[0] = resultText;
+			row[1] = String.valueOf(resultData.get(keyMap));
+			resultTableModel.addRow(row);
+		}
 		
+		
+	}
+	
+	private void buildRuleTable() {
+
+		if (ruleTableModel.getColumnCount() == 0) {		
+			for (String column : ruleColumns) {
+				ruleTableModel.addColumn(column); 
+			}
+			
+			ruleTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			ruleTable.getColumnModel().getColumn(0).setPreferredWidth(250);
+			ruleTable.getColumnModel().getColumn(1).setPreferredWidth(95);
+			ruleTable.getColumnModel().getColumn(2).setPreferredWidth(95);
+	    }
+		
+		 if (ruleData == null) {
+			 return;
+		 }
+		 
+		 for (AssociationRule a : ruleData) {
+			String[] row = new String[3];
+			row[0] = a.getRule();
+			row[1] = String.valueOf(a.getCoverage());
+			row[2] = String.valueOf(a.getAccuracy());
+			ruleTableModel.addRow(row);
+		}	
 	}
 	
 	class readOnlyTableModel extends DefaultTableModel {
@@ -269,12 +305,12 @@ public class Gui extends JFrame implements ActionListener{
 	
 	public void setResultData(Map<Map<String, String>, Double> data) {
 		resultData = data;
-		buildDataTable();
+		buildResultTable();
 	}
 			
 	public void setResultData(AssociationRule[] data) {
 		ruleData = data;
-		buildDataTable();
+		buildRuleTable();
 	}
 	
 	
