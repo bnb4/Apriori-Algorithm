@@ -5,12 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-
 
 public class Gui extends JFrame implements ActionListener{
 
@@ -21,12 +19,13 @@ public class Gui extends JFrame implements ActionListener{
 	
 	/* gui 元件 */
 	private JPanel filePanel = new JPanel();
-	private JTextArea attributeArea = new JTextArea();
 	private JLabel filePath = new JLabel("選擇檔案");
+	private JButton btnChooseFile = new JButton("選擇檔案");
+	
+	private JTextArea attributeArea = new JTextArea();
+	
 	private JLabel labelCoverage = new JLabel("涵蓋率(%)：");
 	private JTextField textCoverage = new JTextField();
-	
-	private JButton btnChooseFile = new JButton("選擇檔案");
 	private JButton btnStart = new JButton("開始");
 	
 	private DefaultTableModel dataTableModel = new readOnlyTableModel(); 
@@ -41,10 +40,13 @@ public class Gui extends JFrame implements ActionListener{
 	/* 資料 */
 	private String[] dataColumns = {};
 	private List<Map<String, String>> data = new ArrayList<>();
+	
 	private String[] resultColumns = {"項目", "涵蓋率"};
-	private String[] ruleColumns = {"法則", "涵蓋率", "正確率"};
 	private Map<Map<String, String>, Double> resultData = new HashMap<Map<String,String>, Double>();
-	private AssociationRule[] ruleData = {};
+	
+	private String[] ruleColumns = {"法則", "涵蓋率", "正確率"};
+	private AssociationRule[] ruleData;
+	
 	private double coverage = 0;
 
 	public Gui() {
@@ -55,18 +57,16 @@ public class Gui extends JFrame implements ActionListener{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);          
 		this.getContentPane().setBackground(Color.white);
-		//this.setAlwaysOnTop(true);
 		this.setResizable(false);
 		this.setLayout(null);
+		
 		
 		filePanel.setBounds(30, 20, 450, 50);
 		filePanel.setLayout(null);
 		
 		filePath.setBounds(115, 10, 335, 30);
-		
 		btnChooseFile.setBounds(5, 10, 100, 30);
-		
-
+	
 		filePanel.add(btnChooseFile);
 		filePanel.add(filePath);
 		
@@ -79,31 +79,32 @@ public class Gui extends JFrame implements ActionListener{
 		Border border = BorderFactory.createDashedBorder(Color.BLACK, 5, 2);
 		attributeArea.setBorder(BorderFactory.createCompoundBorder(border, 
 		            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+		attributeArea.setLineWrap(true);
+		attributeArea.setWrapStyleWord(true);
+		
 		
 		JScrollPane scrollPane = new JScrollPane(dataTable);
 	    scrollPane.setBounds(30, 300, 450, 200);
-	    
-	    
-	    //buildDataTable();
-	    
+
 	    labelCoverage.setBounds(60, 510, 100, 50);
 	    textCoverage.setBounds(140, 520, 100, 30);
 	    btnStart.setBounds(350, 520, 100, 30);
 	    btnStart.setEnabled(false);
-
-	    btnChooseFile.addActionListener(this);
-	    btnStart.addActionListener(this);
-	    
 	    
 	    JScrollPane resultPanel = new JScrollPane(resultTable);
-	    resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	    
+	    resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);	    
+	    resultPanel.setBounds(520, 20, 440, 250);
 	    
 		JScrollPane rulePanel = new JScrollPane(ruleTable);
 		rulePanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		
-		resultPanel.setBounds(520, 20, 440, 250);
 		rulePanel.setBounds(520, 280, 440, 250);
+		
+		buildDataTable();
+		buildResultTable();
+		buildRuleTable();
+		
+		btnChooseFile.addActionListener(this);
+	    btnStart.addActionListener(this);
 	    
 	    add(resultPanel);
 	    add(rulePanel);
@@ -122,6 +123,7 @@ public class Gui extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnChooseFile) {
 			JFileChooser chooser = new JFileChooser();
+			chooser.setCurrentDirectory(new java.io.File("."));
 		    FileNameExtensionFilter filter = new FileNameExtensionFilter("txt", "txt");
 		    chooser.setFileFilter(filter);
 		    
@@ -136,7 +138,14 @@ public class Gui extends JFrame implements ActionListener{
 		    		setData(FileParser.getAllData());
 		    		AprioriAlgorithm.get().setAttributes(FileParser.getAttributeInfo());
 					AprioriAlgorithm.get().setDatas(FileParser.getAllData());
+					showAttribute(FileParser.getAttributeInfo());
 		    		btnStart.setEnabled(true);
+		    	} else {
+		    		JFrame frame = new JFrame();
+					JOptionPane.showMessageDialog(frame,
+					    "輸入檔案格式有誤",
+					    "Error",
+					    JOptionPane.ERROR_MESSAGE);
 		    	}
 		    }
 		    
@@ -144,6 +153,11 @@ public class Gui extends JFrame implements ActionListener{
 		
 		if (e.getSource() == btnStart) {
 			if (textCoverage.getText().isEmpty()){
+				JFrame frame = new JFrame();
+				JOptionPane.showMessageDialog(frame,
+				    "請設定涵蓋率",
+				    "Warning",
+				    JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			
@@ -180,28 +194,63 @@ public class Gui extends JFrame implements ActionListener{
 			dataTableModel.addRow(row);
 		}
 		
-		resultTableModel = new readOnlyTableModel();
-		resultTable.setModel(resultTableModel);
 		
-		for (String column : resultColumns) {
-			resultTableModel.addColumn(column); 
-		}
+	}
+	
+	private void buildResultTable() {
 		
-		resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-	    resultTable.getColumnModel().getColumn(0).setPreferredWidth(250);
-	    resultTable.getColumnModel().getColumn(1).setPreferredWidth(195);
+		
+		if (resultTableModel.getColumnCount() == 0) {		
+			for (String column : resultColumns) {
+				resultTableModel.addColumn(column); 
+			}
+			
+			resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		    resultTable.getColumnModel().getColumn(0).setPreferredWidth(250);
+		    resultTable.getColumnModel().getColumn(1).setPreferredWidth(195);
+	    }
 	    
-	    ruleTableModel = new readOnlyTableModel();
-	    ruleTable.setModel(ruleTableModel);
-		
-		for (String column : ruleColumns) {
-			ruleTableModel.addColumn(column); 
+	   
+
+		for (Map<String, String> keyMap : resultData.keySet()) {
+			String[] row = new String[2];
+			String resultText = "";
+			for (String key : keyMap.keySet()) {
+				resultText += key + " = " + keyMap.get(key) + " , ";
+			}
+			resultText = resultText.substring(0, resultText.length()-3);
+			row[0] = resultText;
+			row[1] = String.valueOf(resultData.get(keyMap));
+			resultTableModel.addRow(row);
 		}
 		
-		ruleTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		ruleTable.getColumnModel().getColumn(0).setPreferredWidth(250);
-		ruleTable.getColumnModel().getColumn(1).setPreferredWidth(95);
-		ruleTable.getColumnModel().getColumn(2).setPreferredWidth(95);
+		
+	}
+	
+	private void buildRuleTable() {
+
+		if (ruleTableModel.getColumnCount() == 0) {		
+			for (String column : ruleColumns) {
+				ruleTableModel.addColumn(column); 
+			}
+			
+			ruleTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			ruleTable.getColumnModel().getColumn(0).setPreferredWidth(250);
+			ruleTable.getColumnModel().getColumn(1).setPreferredWidth(95);
+			ruleTable.getColumnModel().getColumn(2).setPreferredWidth(95);
+	    }
+		
+		 if (ruleData == null) {
+			 return;
+		 }
+		 
+		 for (AssociationRule a : ruleData) {
+			String[] row = new String[3];
+			row[0] = a.getRule();
+			row[1] = String.valueOf(a.getCoverage());
+			row[2] = String.valueOf(a.getAccuracy());
+			ruleTableModel.addRow(row);
+		}	
 	}
 	
 	class readOnlyTableModel extends DefaultTableModel {
@@ -217,6 +266,22 @@ public class Gui extends JFrame implements ActionListener{
 	public void setAttribute(List<String> attributes) {
 		dataColumns = attributes.toArray(dataColumns);
 		buildDataTable();
+	}
+	
+	/*
+	 * 屬性
+	 */
+	public void showAttribute(Map<String, String[]> attribuesMap) {
+		String text = "";
+		for (String key : attribuesMap.keySet()) {
+			text += key + " : \t";
+			for (String value : attribuesMap.get(key)) {
+				text += value + ", ";
+			}
+			text.substring(0, text.length()-1);
+			text += "\n";
+		}
+		attributeArea.setText(text);
 	}
 	
 	/*
@@ -236,12 +301,12 @@ public class Gui extends JFrame implements ActionListener{
 	
 	public void setResultData(Map<Map<String, String>, Double> data) {
 		resultData = data;
-		buildDataTable();
+		buildResultTable();
 	}
 			
 	public void setResultData(AssociationRule[] data) {
 		ruleData = data;
-		buildDataTable();
+		buildRuleTable();
 	}
 	
 	

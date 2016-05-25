@@ -4,34 +4,60 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 	Apriori演算法
+ */
 public class AprioriAlgorithm {
 	
-	private static AprioriAlgorithm aprioriAlgorithm;
-	private double minSupport;
-	private Gui gui;
+	private static AprioriAlgorithm aprioriAlgorithm;  // 獨體參考
+	private double minSupport;                         // 最低接受涵蓋率
+	private Gui gui;                                   // 介面參考
 	
-	private Map<String, String[]> attributes;
-	private List<Map<String, String>> data;
+	private Map<String, String[]> attributes;          // 所有屬性與其可能值
+	private List<Map<String, String>> data;            // 資料集
 	
+	/*
+	 * 建構子
+	 */
 	private AprioriAlgorithm() {}
 	
+	/*
+	 * 取得演算法物件
+	 * @return 演算法獨體物件參考
+	 */
 	public static AprioriAlgorithm get() {
 		aprioriAlgorithm = aprioriAlgorithm == null ? new AprioriAlgorithm() : aprioriAlgorithm;
 		return aprioriAlgorithm;
 	}
 	
+	/*
+	 * 傳入所有屬性與其可能值
+	 * @param attributes 所有屬性與其可能值
+	 */
 	public void setAttributes(Map<String, String[]> attributes) {
 		this.attributes = attributes;
 	}
 	
+	/*
+	 * 傳入資料集
+	 * @param data 資料集
+	 */
 	public void setDatas(List<Map<String, String>> data) {
 		this.data = data;
 	}
 	
+	/*
+	 * 傳入最低接受涵蓋率
+	 * @param minSupport 最低接受涵蓋率
+	 */
 	public void setMinSupport(double minSupport) {
 		this.minSupport = minSupport;
 	}
 	
+	/*
+	 * 執行Apriori演算法
+	 * @param gui 介面參考
+	 */
 	public void start(Gui gui) {
 		this.gui = gui;
 		newCandidate(1, null);
@@ -59,7 +85,9 @@ public class AprioriAlgorithm {
 		}
 		
 		gui.setResultData(candidate);
-		gui.setResultData(mineRules(candidate));
+		if (round != 1) {
+			gui.setResultData(mineRules(candidate));
+		}
 		newCandidate(round+1, candidate);
 	}
 	
@@ -139,12 +167,12 @@ public class AprioriAlgorithm {
 	private String toRuleString(Map<String, String> targetA, Map<String, String> targetB) {
 		String rule = "{ ";
 		for (String attribute : targetA.keySet()) {
-			rule += attribute + " = " + targetA.get(attribute) + " & ";
+			rule += attribute + " = " + targetA.get(attribute) + " , ";
 		}
 		rule = rule.substring(0, rule.length() - 2);
-		rule += "-> { ";
+		rule += "} -> { ";
 		for (String attribute : targetB.keySet()) {
-			rule += attribute + " = " + targetA.get(attribute) + " & ";
+			rule += attribute + " = " + targetB.get(attribute) + " , ";
 		}
 		rule = rule.substring(0, rule.length() - 2);
 		rule += "}";
@@ -177,6 +205,6 @@ public class AprioriAlgorithm {
 				matchData++;
 			}
 		}
-		return matchData * 1.0 / supportData;
+		return Math.rint(matchData * 100.0 / supportData)/100;
 	}
 }

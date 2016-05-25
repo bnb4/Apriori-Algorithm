@@ -41,11 +41,16 @@ public class FileParser {
 					continue;
 				}
 				if (isReadAttribute) {
-					loadAttribute(line);
+					if (!loadAttribute(line)) {
+						throw new Exception("Attribute is not valid");
+					}
+					
 				}
 				
 				if (!isReadAttribute) {
-					addData(line);
+					if (!addData(line)) {
+						throw new Exception("Attribute is not exist");
+					}
 				}
 			}
 			
@@ -63,30 +68,36 @@ public class FileParser {
 	 * 載入屬性名稱與定義
 	 * @param line 讀取資料
 	 */
-	private static void loadAttribute(String line) {
+	private static boolean loadAttribute(String line) {
 		
 		// 跳過空行
 		if (line.trim().length() == 0 ) {
-			return;
+			return true;
 		}
+		try {
 		
-		// 處理屬性名稱與定義
-		String[] att = line.split(":");
-		String[] values = att[1].trim().split("\\s*,\\s*");
-		
-		attibutesMap.put(att[0].trim(), values);
-		attribute.add(att[0].trim());
+			// 處理屬性名稱與定義
+			String[] att = line.split(":");
+			String[] values = att[1].trim().split("\\s*,\\s*");
+			
+			attibutesMap.put(att[0].trim(), values);
+			attribute.add(att[0].trim());
+			
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	/**
 	 * 載入一筆資料
 	 * @param line 資料
 	 */
-	public static void addData(String line) {
+	public static boolean addData(String line) {
 		
 		// 跳過空行
 		if (line.trim().length() == 0 ) {
-			return;
+			return false;
 		}
 		
 		// 分割資料
@@ -106,7 +117,9 @@ public class FileParser {
 		// 存入資料
 		if (map.size() == attibutesMap.keySet().size()){
 			data.add(map);
+			return true;
 		}
+		return false;
 
 	}
 	
