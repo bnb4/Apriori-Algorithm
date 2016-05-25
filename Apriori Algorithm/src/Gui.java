@@ -186,7 +186,11 @@ public class Gui extends JFrame implements ActionListener{
 		}
 	}
 	
+	/**
+	 * 清除table資料
+	 */
 	private void clearAllTable() {
+		//將資料全部設為空值
 		data = new ArrayList<>();
 		resultData = new HashMap<Map<String,String>, Double>();		
 		ruleData = null;
@@ -197,24 +201,31 @@ public class Gui extends JFrame implements ActionListener{
 		ruleTableModel = new readOnlyTableModel();
 		ruleTable.setModel(ruleTableModel);
 		
+		//重建table
 		buildResultTable();
 		buildRuleTable();
 	}
 
-	
+	/**
+	 * 建立資料table
+	 */
 	private void buildDataTable() {
 		
+		//如果data欄位為空，不做事
 		if (dataColumns == null) {
 			return;
 		}
 		
+		//清空現有資料
 		dataTableModel = new readOnlyTableModel();
 		dataTable.setModel(dataTableModel);
 		
+		//塞欄位
 		for (String column : dataColumns) {
 			dataTableModel.addColumn(column); 
 		}
 		
+		//塞資料
 		for (Map<String, String> map : data) {
 			String[] row = new String[map.keySet().size()];
 			int index = 0;
@@ -226,54 +237,63 @@ public class Gui extends JFrame implements ActionListener{
 		}
 	}
 	
+	/**
+	 * 建立過程結果table
+	 */
 	private void buildResultTable() {
-		
-		
+
+		//是否已經建立欄位
 		if (resultTableModel.getColumnCount() == 0) {		
 			for (String column : resultColumns) {
 				resultTableModel.addColumn(column); 
 			}
 			
+			//設定欄位寬度
 			resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		    resultTable.getColumnModel().getColumn(0).setPreferredWidth(370);
 		    resultTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 	    }
-	    
 	   
-
+		//加入資料
 		for (Map<String, String> keyMap : resultData.keySet()) {
 			String[] row = new String[2];
 			String resultText = "";
 			for (String key : keyMap.keySet()) {
 				resultText += key + " = " + keyMap.get(key) + " , ";
 			}
+			//去除多餘的逗號
 			resultText = resultText.substring(0, resultText.length()-3);
 			row[0] = resultText;
 			row[1] = String.valueOf(resultData.get(keyMap));
 			resultTableModel.addRow(row);
 		}
-		
-		
 	}
 	
+	/**
+	 * 建立法則table
+	 */
 	private void buildRuleTable() {
 
+		//是否已經建立欄位
 		if (ruleTableModel.getColumnCount() == 0) {		
 			for (String column : ruleColumns) {
 				ruleTableModel.addColumn(column); 
 			}
 			
+			//設定欄位寬度
 			ruleTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 			ruleTable.getColumnModel().getColumn(0).setPreferredWidth(320);
 			ruleTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 			ruleTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 	    }
 		
-		 if (ruleData == null) {
-			 return;
-		 }
-		 
-		 for (AssociationRule a : ruleData) {
+		//若法則資料為空，不做事
+		if (ruleData == null) {
+			return;
+		}
+		
+		//塞資料
+		for (AssociationRule a : ruleData) {
 			String[] row = new String[3];
 			row[0] = a.getRule();
 			row[1] = String.valueOf(a.getCoverage());
@@ -282,6 +302,10 @@ public class Gui extends JFrame implements ActionListener{
 		}	
 	}
 	
+	/**
+	 * 繼承 DefaultTableModel class
+	 * 將可修改方法改為false
+	 */
 	class readOnlyTableModel extends DefaultTableModel {
 		@Override
 		public boolean isCellEditable(int row, int column) {
@@ -289,16 +313,18 @@ public class Gui extends JFrame implements ActionListener{
 		}
 	}
 
-	/*
-	 * 設定屬性
+	/**
+	 * 設定屬性欄位
+	 * @param attributes 屬性字串
 	 */
 	public void setAttribute(List<String> attributes) {
 		dataColumns = attributes.toArray(dataColumns);
 		buildDataTable();
 	}
 	
-	/*
-	 * 屬性
+	/**
+	 * 顯示屬性詳細資料
+	 * @param attribuesMap 屬性名稱對應其範圍之Map
 	 */
 	public void showAttribute(Map<String, String[]> attribuesMap) {
 		String text = "";
@@ -313,26 +339,28 @@ public class Gui extends JFrame implements ActionListener{
 		attributeArea.setText(text);
 	}
 	
-	/*
-	 * 設定資料 
+	/**
+	 * 設定所有資料
+	 * @param list 所有資料的List
 	 */
 	public void setData(List<Map<String, String>> list) {
 		data = list;
 		buildDataTable();
 	}
 	
-	/*
-	 * 設定涵蓋率
+	/**
+	 * 設定過程結果資料
+	 * @param data 過程結果配對與涵蓋率的map
 	 */
-	public void setAccuracy(double coverage) {
-		this.coverage = coverage / 100;
-	}
-	
 	public void setResultData(Map<Map<String, String>, Double> data) {
 		resultData = data;
 		buildResultTable();
 	}
-			
+	
+	/**
+	 * 設定法則資料
+	 * @param data AssociationRule陣列
+	 */
 	public void setResultData(AssociationRule[] data) {
 		ruleData = data;
 		buildRuleTable();
