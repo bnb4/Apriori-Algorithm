@@ -16,7 +16,8 @@ public class AprioriAlgorithm {
 	private AprioriAlgorithm() {}
 	
 	public static AprioriAlgorithm get() {
-		return aprioriAlgorithm == null ? new AprioriAlgorithm() : aprioriAlgorithm;
+		aprioriAlgorithm = aprioriAlgorithm == null ? new AprioriAlgorithm() : aprioriAlgorithm;
+		return aprioriAlgorithm;
 	}
 	
 	public void setAttributes(Map<String, String[]> attributes) {
@@ -33,7 +34,9 @@ public class AprioriAlgorithm {
 	
 	public void start(Gui gui) {
 		this.gui = gui;
-		newCandidate(1, null);
+		Map<Map<String, String>, Double> result = newCandidate(1, null);
+		mineRules(result);
+		gui.setResultData(new AssociationRule[] {new AssociationRule("A -> B", 0.6, 0.8)});
 	}
 	
 	private Map<Map<String, String>, Double> newCandidate(int round, 
@@ -57,6 +60,8 @@ public class AprioriAlgorithm {
 		if (candidate.size() == 0) {
 			return preCandidate;
 		}
+		
+		gui.setResultData(candidate);
 		return newCandidate(round+1, candidate);
 	}
 	
@@ -92,7 +97,8 @@ public class AprioriAlgorithm {
 	}
 	
 	private Map<String, String>[] mapSetToArray(Set<Map<String, String>> set) {
-		Map<String, String>[] array = (Map<String, String>[]) new Map[set.size()];
+		
+		Map<String, String>[] array = set.toArray(new Map[set.size()]);
 		return array;
 	}
 	
@@ -110,5 +116,9 @@ public class AprioriAlgorithm {
 			}
 		}
 		return matchData * 1.0 / data.size();
+	}
+	
+	private AssociationRule[] mineRules(Map<Map<String, String>, Double> result) {
+		return null;
 	}
 }
