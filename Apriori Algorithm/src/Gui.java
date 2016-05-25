@@ -5,12 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-
 
 public class Gui extends JFrame implements ActionListener{
 
@@ -21,12 +19,13 @@ public class Gui extends JFrame implements ActionListener{
 	
 	/* gui 元件 */
 	private JPanel filePanel = new JPanel();
-	private JTextArea attributeArea = new JTextArea();
 	private JLabel filePath = new JLabel("選擇檔案");
+	private JButton btnChooseFile = new JButton("選擇檔案");
+	
+	private JTextArea attributeArea = new JTextArea();
+	
 	private JLabel labelCoverage = new JLabel("涵蓋率(%)：");
 	private JTextField textCoverage = new JTextField();
-	
-	private JButton btnChooseFile = new JButton("選擇檔案");
 	private JButton btnStart = new JButton("開始");
 	
 	private DefaultTableModel dataTableModel = new readOnlyTableModel(); 
@@ -41,10 +40,13 @@ public class Gui extends JFrame implements ActionListener{
 	/* 資料 */
 	private String[] dataColumns = {};
 	private List<Map<String, String>> data = new ArrayList<>();
+	
 	private String[] resultColumns = {"項目", "涵蓋率"};
-	private String[] ruleColumns = {"法則", "涵蓋率", "正確率"};
 	private Map<Map<String, String>, Double> resultData = new HashMap<Map<String,String>, Double>();
+	
+	private String[] ruleColumns = {"法則", "涵蓋率", "正確率"};
 	private AssociationRule[] ruleData;
+	
 	private double coverage = 0;
 
 	public Gui() {
@@ -58,14 +60,13 @@ public class Gui extends JFrame implements ActionListener{
 		this.setResizable(false);
 		this.setLayout(null);
 		
+		
 		filePanel.setBounds(30, 20, 450, 50);
 		filePanel.setLayout(null);
 		
 		filePath.setBounds(115, 10, 335, 30);
-		
 		btnChooseFile.setBounds(5, 10, 100, 30);
-		
-
+	
 		filePanel.add(btnChooseFile);
 		filePanel.add(filePath);
 		
@@ -84,31 +85,26 @@ public class Gui extends JFrame implements ActionListener{
 		
 		JScrollPane scrollPane = new JScrollPane(dataTable);
 	    scrollPane.setBounds(30, 300, 450, 200);
-	    
-	    
-	    buildDataTable();
-	    
+
 	    labelCoverage.setBounds(60, 510, 100, 50);
 	    textCoverage.setBounds(140, 520, 100, 30);
 	    btnStart.setBounds(350, 520, 100, 30);
 	    btnStart.setEnabled(false);
-
-	    btnChooseFile.addActionListener(this);
-	    btnStart.addActionListener(this);
-	    
 	    
 	    JScrollPane resultPanel = new JScrollPane(resultTable);
-	    resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	    
+	    resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);	    
+	    resultPanel.setBounds(520, 20, 440, 250);
 	    
 		JScrollPane rulePanel = new JScrollPane(ruleTable);
 		rulePanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		
-		resultPanel.setBounds(520, 20, 440, 250);
 		rulePanel.setBounds(520, 280, 440, 250);
 		
+		buildDataTable();
 		buildResultTable();
 		buildRuleTable();
+		
+		btnChooseFile.addActionListener(this);
+	    btnStart.addActionListener(this);
 	    
 	    add(resultPanel);
 	    add(rulePanel);
