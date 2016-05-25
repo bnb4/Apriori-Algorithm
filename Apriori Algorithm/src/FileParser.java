@@ -21,6 +21,10 @@ public class FileParser {
 	
 	private static boolean readFile() {
 		
+		attibutesMap = new HashMap<String, String[]>();
+		data = new ArrayList<Map<String, String>>();
+		attribute = new ArrayList<String>();
+		
 		if (PATH.equals("")){
 			return false;
 		}
@@ -60,6 +64,8 @@ public class FileParser {
 			e.printStackTrace(); 
 			return false;
 		} catch (Exception e) {
+			e.printStackTrace(); 
+			System.out.println(e.getMessage());
 			return false;
 		}
 	}

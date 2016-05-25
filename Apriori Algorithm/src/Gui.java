@@ -92,11 +92,13 @@ public class Gui extends JFrame implements ActionListener{
 	    btnStart.setEnabled(false);
 	    
 	    JScrollPane resultPanel = new JScrollPane(resultTable);
-	    resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);	    
+	    resultPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	    resultPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	    resultPanel.setBounds(520, 20, 440, 250);
 	    
 		JScrollPane rulePanel = new JScrollPane(ruleTable);
 		rulePanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		rulePanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		rulePanel.setBounds(520, 280, 440, 250);
 		
 		buildDataTable();
@@ -123,7 +125,9 @@ public class Gui extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnChooseFile) {
 			JFileChooser chooser = new JFileChooser();
+			//設定chooser的預設路徑
 			chooser.setCurrentDirectory(new java.io.File("."));
+			//限定選取檔案格式
 		    FileNameExtensionFilter filter = new FileNameExtensionFilter("txt", "txt");
 		    chooser.setFileFilter(filter);
 		    
@@ -133,12 +137,20 @@ public class Gui extends JFrame implements ActionListener{
 		    	String path = chooser.getSelectedFile().getPath();
 		    	filePath.setText(path);
 		    	boolean isValidFile = FileParser.setPath(path);
+		    	
+		    	//判斷檔案是否正確解析
 		    	if (isValidFile) {
+		    		//將檔案顯示於gui
+		    		clearAllTable();
 		    		setAttribute(FileParser.getAttributes());
 		    		setData(FileParser.getAllData());
+		    		showAttribute(FileParser.getAttributeInfo());
+		    		
+		    		//將檔案資料傳送至AprioriAlogorithm
 		    		AprioriAlgorithm.get().setAttributes(FileParser.getAttributeInfo());
 					AprioriAlgorithm.get().setDatas(FileParser.getAllData());
-					showAttribute(FileParser.getAttributeInfo());
+					
+					//開啟Start按鈕
 		    		btnStart.setEnabled(true);
 		    	} else {
 		    		JFrame frame = new JFrame();
@@ -148,10 +160,11 @@ public class Gui extends JFrame implements ActionListener{
 					    JOptionPane.ERROR_MESSAGE);
 		    	}
 		    }
-		    
 		}
 		
 		if (e.getSource() == btnStart) {
+			
+			//未輸入案概率
 			if (textCoverage.getText().isEmpty()){
 				JFrame frame = new JFrame();
 				JOptionPane.showMessageDialog(frame,
@@ -162,11 +175,30 @@ public class Gui extends JFrame implements ActionListener{
 			}
 			
 			coverage = Double.parseDouble(textCoverage.getText()) / 100;
+			//涵蓋率範圍0~1
 			if (coverage > 0 && coverage < 1) {
+				clearAllTable();
+				//設定AprioriAlgorithm涵蓋率
 				AprioriAlgorithm.get().setMinSupport(coverage);
+				//開始執行
 				AprioriAlgorithm.get().start(this);
 			}
 		}
+	}
+	
+	private void clearAllTable() {
+		data = new ArrayList<>();
+		resultData = new HashMap<Map<String,String>, Double>();		
+		ruleData = null;
+		
+		resultTableModel = new readOnlyTableModel();
+		resultTable.setModel(resultTableModel);
+		
+		ruleTableModel = new readOnlyTableModel();
+		ruleTable.setModel(ruleTableModel);
+		
+		buildResultTable();
+		buildRuleTable();
 	}
 
 	
@@ -183,7 +215,6 @@ public class Gui extends JFrame implements ActionListener{
 			dataTableModel.addColumn(column); 
 		}
 		
-		
 		for (Map<String, String> map : data) {
 			String[] row = new String[map.keySet().size()];
 			int index = 0;
@@ -193,8 +224,6 @@ public class Gui extends JFrame implements ActionListener{
 			}
 			dataTableModel.addRow(row);
 		}
-		
-		
 	}
 	
 	private void buildResultTable() {
@@ -206,8 +235,8 @@ public class Gui extends JFrame implements ActionListener{
 			}
 			
 			resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		    resultTable.getColumnModel().getColumn(0).setPreferredWidth(250);
-		    resultTable.getColumnModel().getColumn(1).setPreferredWidth(195);
+		    resultTable.getColumnModel().getColumn(0).setPreferredWidth(370);
+		    resultTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 	    }
 	    
 	   
@@ -235,9 +264,9 @@ public class Gui extends JFrame implements ActionListener{
 			}
 			
 			ruleTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-			ruleTable.getColumnModel().getColumn(0).setPreferredWidth(250);
-			ruleTable.getColumnModel().getColumn(1).setPreferredWidth(95);
-			ruleTable.getColumnModel().getColumn(2).setPreferredWidth(95);
+			ruleTable.getColumnModel().getColumn(0).setPreferredWidth(320);
+			ruleTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+			ruleTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 	    }
 		
 		 if (ruleData == null) {
