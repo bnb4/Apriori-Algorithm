@@ -100,7 +100,7 @@ public class AprioriAlgorithm {
 		
 		// 將本次得到之關聯法則傳給介面
 		if (round != 1) {
-			gui.setResultData(mineRules(candidate));
+			gui.setRuleData(mineRules(candidate));
 		}
 		
 		// 進行下一維度Apriori演算法

@@ -361,7 +361,7 @@ public class Gui extends JFrame implements ActionListener{
 	 * 設定法則資料
 	 * @param data AssociationRule陣列
 	 */
-	public void setResultData(AssociationRule[] data) {
+	public void setRuleData(AssociationRule[] data) {
 		ruleData = data;
 		buildRuleTable();
 	}
