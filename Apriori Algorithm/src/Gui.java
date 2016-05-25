@@ -107,6 +107,8 @@ public class Gui extends JFrame implements ActionListener{
 		
 		resultPanel.setBounds(520, 20, 440, 250);
 		rulePanel.setBounds(520, 280, 440, 250);
+		
+		buildResultTable();
 	    
 	    add(resultPanel);
 	    add(rulePanel);
@@ -184,8 +186,10 @@ public class Gui extends JFrame implements ActionListener{
 			dataTableModel.addRow(row);
 		}
 		
-		resultTableModel = new readOnlyTableModel();
-		resultTable.setModel(resultTableModel);
+		
+	}
+	
+	private void buildResultTable() {
 		
 		for (String column : resultColumns) {
 			resultTableModel.addColumn(column); 
@@ -195,8 +199,6 @@ public class Gui extends JFrame implements ActionListener{
 	    resultTable.getColumnModel().getColumn(0).setPreferredWidth(250);
 	    resultTable.getColumnModel().getColumn(1).setPreferredWidth(195);
 	    
-	    ruleTableModel = new readOnlyTableModel();
-	    ruleTable.setModel(ruleTableModel);
 		
 		for (String column : ruleColumns) {
 			ruleTableModel.addColumn(column); 
@@ -206,6 +208,17 @@ public class Gui extends JFrame implements ActionListener{
 		ruleTable.getColumnModel().getColumn(0).setPreferredWidth(250);
 		ruleTable.getColumnModel().getColumn(1).setPreferredWidth(95);
 		ruleTable.getColumnModel().getColumn(2).setPreferredWidth(95);
+		/*
+		Map<Map<String, String>, Double>
+		
+		
+		for (Map keyMap : resultData.keySet()) {
+			String[] row = new String[3];
+			for (String column : keyMap.keySet()) {
+				
+			}
+		}*/
+		
 	}
 	
 	class readOnlyTableModel extends DefaultTableModel {
