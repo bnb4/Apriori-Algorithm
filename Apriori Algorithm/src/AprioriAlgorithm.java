@@ -36,6 +36,7 @@ public class AprioriAlgorithm {
 		this.gui = gui;
 		Map<Map<String, String>, Double> result = newCandidate(1, null);
 		mineRules(result);
+		gui.setResultData(new AssociationRule[] {new AssociationRule("A -> B", 0.6, 0.8)});
 	}
 	
 	private Map<Map<String, String>, Double> newCandidate(int round, 
@@ -59,6 +60,8 @@ public class AprioriAlgorithm {
 		if (candidate.size() == 0) {
 			return preCandidate;
 		}
+		
+		gui.setResultData(candidate);
 		return newCandidate(round+1, candidate);
 	}
 	
@@ -94,7 +97,8 @@ public class AprioriAlgorithm {
 	}
 	
 	private Map<String, String>[] mapSetToArray(Set<Map<String, String>> set) {
-		Map<String, String>[] array = (Map<String, String>[]) new Map[set.size()];
+		
+		Map<String, String>[] array = set.toArray(new Map[set.size()]);
 		return array;
 	}
 	
